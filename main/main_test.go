@@ -6,6 +6,8 @@ import (
 
 func TestEventsLog(t *testing.T) {
 
+	b := Biatlon{make(map[int]TableRow, 4)}
+
 	var tests = []struct {
 		name   string
 		input  string
@@ -26,7 +28,7 @@ func TestEventsLog(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ans, err := EventHandler(tt.input)
+			ans, err := b.EventHandler(tt.input)
 			if err != nil || ans != tt.output {
 				t.Errorf(`EventHandler("`+tt.input+`") = %q, %v, want match for %#q, nil`, ans, err, tt.output)
 			}
