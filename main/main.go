@@ -254,8 +254,6 @@ func main() {
 	jsonParser := json.NewDecoder(configFile)
 	jsonParser.Decode(&config)
 
-	fmt.Println(config)
-
 	tmpDelta, _ := time.Parse("15:04:05", config.StartDelta)
 	deltaTime := tmpDelta.Sub(time.Time{})
 
@@ -340,6 +338,9 @@ func main() {
 		return timeI.Before(timeJ)
 	})
 
-	fmt.Print(result)
+	fmt.Println()
+	for _, v := range result {
+		fmt.Println(v)
+	}
 
 }
