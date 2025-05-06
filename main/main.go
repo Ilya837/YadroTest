@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strconv"
@@ -243,11 +244,26 @@ func remove(slice []int, value int) []int {
 
 func main() {
 
-	configFile, err := os.Open("./sunny_5_skiers/config.json")
-	defer configFile.Close()
-	if err != nil {
-		fmt.Print(err)
+	log.SetFlags(0)
+
+	//logFilePath := flag.String("l", "./logrus.log", "path to log file")
+	//fmt.Println(*logFilePath)
+	file, err := os.OpenFile("./logrus.log", os.O_CREATE|os.O_WRONLY, 0666)
+
+	if err == nil {
+		log.SetOutput(file)
 	}
+
+	defer file.Close()
+
+	//configFilePath := flag.String("cfg", "./sunny_5_skiers/config.json", "path to config file")
+	configFile, err := os.Open("./sunny_5_skiers/config.json")
+
+	if err != nil {
+		log.Print(err)
+	}
+
+	defer configFile.Close()
 
 	config := Config{}
 
@@ -280,11 +296,11 @@ func main() {
 				strId := strconv.Itoa(disqualif[i])
 				res, err := b.EventHandler("[" + sum.Format("15:04:05.000") + "] 32 " + strId)
 				if err != nil {
-					fmt.Print(err)
+					log.Print(err)
 					panic(err)
 				}
 
-				fmt.Println(res)
+				log.Println(res)
 
 				disqualifDel = append(disqualifDel, disqualif[i])
 			}
@@ -298,20 +314,20 @@ func main() {
 		res, err := b.EventHandler(line)
 
 		if err != nil {
-			fmt.Print(err)
+			log.Print(err)
 			panic(err)
 		}
 
-		fmt.Println(res)
+		log.Println(res)
 
 		if words[1] == "10" {
 			if id, _ := strconv.Atoi(words[2]); len(b.table[id].LapTimes) == config.Laps {
 				res, err := b.EventHandler(words[0] + " 33 " + words[2])
 				if err != nil {
-					fmt.Print(err)
+					log.Print(err)
 					panic(err)
 				}
-				fmt.Println(res)
+				log.Println(res)
 			}
 		}
 
@@ -338,7 +354,17 @@ func main() {
 		return timeI.Before(timeJ)
 	})
 
-	fmt.Println()
+	//resultFilePath := flag.String("res", "./results", "path to result file")
+	resFile, err := os.OpenFile("./results", os.O_CREATE|os.O_WRONLY, 0666)
+
+	if err == nil {
+		for _, v := range result {
+			resFile.Write([]byte(v + "\n"))
+		}
+	}
+
+	defer resFile.Close()
+
 	for _, v := range result {
 		fmt.Println(v)
 	}
