@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestEventsLog(t *testing.T) {
+func TestEvents(t *testing.T) {
 
 	b := Biatlon{make(map[int]TableRow, 4)}
 
@@ -35,4 +35,26 @@ func TestEventsLog(t *testing.T) {
 		})
 	}
 
+}
+
+func TestResultFunc(t *testing.T) {
+	b := Biatlon{make(map[int]TableRow, 4)}
+
+	b.EventHandler("[09:05:59.867] 1 1")
+	b.EventHandler("[09:15:00.841] 2 1 09:30:00.000")
+	b.EventHandler("[09:29:45.734] 3 1")
+	b.EventHandler("[09:30:01.005] 4 1")
+	b.EventHandler("[09:49:31.659] 5 1 2")
+	b.EventHandler("[09:49:33.123] 6 1 2")
+	b.EventHandler("[09:49:38.339] 7 1")
+	b.EventHandler("[09:49:55.915] 8 1")
+	b.EventHandler("[09:51:48.391] 9 1")
+	b.EventHandler("[09:59:03.872] 10 1")
+	b.EventHandler("[09:59:03.872] 11 1 Lost in the forest")
+
+	config := Config{2, 3651, 50, 1, "09:30:00", "00:00:30"}
+	res := b.GetResult(config)
+	if res != "[NotFinished] 1 [{00:29:03.872, 2.093}, {] {00:01:52.476, 0.444} 1/5\n" {
+		t.Errorf(`Result = %v, want match for [NotFinished] 1 [{00:29:03.872, 2.093}, {] {00:01:52.476, 0.444} 1/5`, res)
+	}
 }
